@@ -3,3 +3,9 @@ git-push.sh
 LICENSE
 
 README.md
+
+demotest.py
+
+__pycache__/
+
+__pycache__\
