@@ -1,5 +1,6 @@
 import yaml
 
+
 def read_params(config_path="params.yaml"):
     method_name = read_params.__name__
 
@@ -10,4 +11,6 @@ def read_params(config_path="params.yaml"):
         return config
 
     except Exception as e:
-        raise Exception(f"Exception occured in {__file__}, Method : {method_name}, Error : {str(e)}")
+        raise Exception(
+            f"Exception occured in {__file__}, Method : {method_name}, Error : {str(e)}"
+        )

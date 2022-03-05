@@ -3,17 +3,17 @@ import os
 
 
 class PascalVocXml:
-    def xmlStart(self, imagePath):
-        imageFolder = imagePath.split(os.sep)[-2]
-        imageFilename = imagePath.split(os.sep)[-1]
-        image = cv2.imread(imagePath)
+    def xmlStart(self, image_path):
+        imageFolder = image_path.split(os.sep)[-2]
+        imageFilename = image_path.split(os.sep)[-1]
+        image = cv2.imread(image_path)
         (imageHeight, imageWidth, imageDepth) = image.shape
 
         pascal_voc_start = (
             '<annotation verified="yes">\n'
             "	<folder>" + imageFolder + "</folder>\n"
             "	<filename>" + imageFilename + "</filename>\n"
-            "	<path>" + imagePath + "</path>\n"
+            "	<path>" + image_path + "</path>\n"
             "	<source>\n"
             "	  <database>Unknown</database>\n"
             "	</source>\n"

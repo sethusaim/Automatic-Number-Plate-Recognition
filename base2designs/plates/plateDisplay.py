@@ -2,9 +2,9 @@ import cv2
 from PIL import Image
 
 
-def crop(imagePath, coords, saved_location):
+def crop(image_path, coords, saved_location):
     try:
-        image_obj = Image.open(imagePath)
+        image_obj = Image.open(image_path)
 
         cropped_image = image_obj.crop(coords)
         cropped_image = cropped_image.convert("RGB")
@@ -18,7 +18,7 @@ def crop(imagePath, coords, saved_location):
 class PlateDisplay:
 
     # create an annotated image with plate boxes, char boxes, and labels
-    def labelImage(self, image, plateBoxes, imagePath, cropped_img_path):
+    def labelImage(self, image, plateBoxes, image_path, cropped_img_path):
         (H, W) = image.shape[:2]
 
         for plateBox in plateBoxes:
@@ -30,7 +30,7 @@ class PlateDisplay:
             endX = int(endX * W)
             endY = int(endY * H)
             croppedimage = crop(
-                imagePath, (startX, startY, endX, endY), cropped_img_path
+                image_path, (startX, startY, endX, endY), cropped_img_path
             )
 
         # loop over the plate text predictions
@@ -46,7 +46,7 @@ class PlateDisplay:
         #     # cv2.rectangle(image, (startX, startY), (endX, endY),
         #     #               (0, 0, 255), 1)
         #
-        #     crop(imagePath, (startX, startY, endX, endY), cropped_img_path)
+        #     crop(image_path, (startX, startY, endX, endY), cropped_img_path)
         #     # # Draw the char boxes and text labels in green
         #     # for (chBox, char) in zip(chBoxes, charText):
         #     #     (startY, startX, endY, endX) = chBox

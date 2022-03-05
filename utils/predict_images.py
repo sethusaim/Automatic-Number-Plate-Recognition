@@ -52,14 +52,12 @@ class DetectVehicleNumberPlate:
 
         self.plateDisplay = PlateDisplay()
 
-    def predictImages(
-        self, imagePathArg, pred_stagesArg, cropped_img_path, numPlateOrg
-    ):
+    def predictImages(self, image_path, pred_stagesArg, cropped_img_path, numPlateOrg):
         with numPlateOrg.model.as_default():
             with tf.Session(graph=numPlateOrg.model) as sess:
                 predicter = Predicter(numPlateOrg.model, sess, numPlateOrg.categoryIdx)
 
-                image = cv2.imread(imagePathArg)
+                image = cv2.imread(image_path)
 
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -73,7 +71,7 @@ class DetectVehicleNumberPlate:
                         plateScores_pred,
                     ) = self.plateFinder.findPlatesOnly(boxes, scores, labels)
                     imageLabelled = self.getBoundingBox(
-                        image, plateBoxes_pred, imagePathArg, cropped_img_path
+                        image, plateBoxes_pred, image_path, cropped_img_path
                     )
 
                 else:
@@ -86,7 +84,7 @@ class DetectVehicleNumberPlate:
 
                 return imageLabelled
 
-    def getBoundingBox(self, image, plateBoxes, imagePath, cropped_img_path):
+    def getBoundingBox(self, image, plateBoxes, image_path, cropped_img_path):
         (H, W) = image.shape[:2]
 
         for plateBox in plateBoxes:
@@ -101,7 +99,7 @@ class DetectVehicleNumberPlate:
             endY = int(endY * H)
 
             try:
-                image_obj = Image.open(imagePath)
+                image_obj = Image.open(image_path)
 
                 cropped_image = image_obj.crop((startX, startY, endX, endY))
 

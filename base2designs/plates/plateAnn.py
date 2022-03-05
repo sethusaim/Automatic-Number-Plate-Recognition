@@ -11,15 +11,15 @@ class PlateAnn:
         endY = int(endY * H)
         return startX, startY, endX, endY
 
-    def xmlStart(self, imagePath, imageHeight, imageWidth, imageDepth):
-        imageFolder = imagePath.split(os.sep)[-2]
-        imageFilename = imagePath.split(os.sep)[-1]
+    def xmlStart(self, image_path, imageHeight, imageWidth, imageDepth):
+        imageFolder = image_path.split(os.sep)[-2]
+        imageFilename = image_path.split(os.sep)[-1]
 
         pascal_voc_start = (
             "<annotation>\n"
             "	<folder>" + imageFolder + "</folder>\n"
             "	<filename>" + imageFilename + "</filename>\n"
-            "	<path>" + imagePath + "</path>\n"
+            "	<path>" + image_path + "</path>\n"
             "	<source>\n"
             "		<database>Unknown</database>\n"
             "	</source>\n"
@@ -56,7 +56,7 @@ class PlateAnn:
     def writeAnnFile(
         self,
         xmlPath,
-        imagePath,
+        image_path,
         plateBox,
         plateText,
         charBoxes,
@@ -67,7 +67,7 @@ class PlateAnn:
 
         # create the xml file, and write the preamble
         xmlFile = open(xmlPath, "w")
-        xmlFile.write(self.xmlStart(imagePath, imageWidth, imageHeight, imageDepth))
+        xmlFile.write(self.xmlStart(image_path, imageWidth, imageHeight, imageDepth))
 
         # add the plateBox to the xml file
         left, top, right, bottom = self.scaleBB(plateBox, imageWidth, imageHeight)

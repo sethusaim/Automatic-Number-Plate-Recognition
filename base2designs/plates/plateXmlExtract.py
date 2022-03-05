@@ -35,8 +35,8 @@ class PlateXmlExtract:
                 # check to see if the file is an image and should be processed
                 if ext.endswith(validExts):
                     # construct the path to the image and yield it
-                    imagePath = os.path.join(rootDir, filename).replace(" ", "\\ ")
-                    yield imagePath
+                    image_path = os.path.join(rootDir, filename).replace(" ", "\\ ")
+                    yield image_path
 
     # return a list of verified xml files, and the the number of files found
     def getXmlVerifiedFileList(self, annotations_dir):
