@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import tensorflow as tf
 from PIL import Image
@@ -10,9 +12,15 @@ from base2designs.utils import label_map_util
 
 class DetectVehicleNumberPlate:
     def __init__(self):
-        self.modelArg = "datasets/experiment_ssd/2018_07_25_14-00/exported_model/frozen_inference_graph.pb"
+        self.modelArg = os.path.join(
+            "datasets",
+            "experiment_ssd",
+            "2018_07_25_14-00",
+            "exported_model",
+            "frozen_inference_graph.pb",
+        )
 
-        self.labelsArg = "datasets/records/classes.pbtxt"
+        self.labelsArg = os.path.join("datasets", "records", "classes.pbtxt")
 
         self.num_classesArg = 37
 
@@ -45,7 +53,7 @@ class DetectVehicleNumberPlate:
         self.plateDisplay = PlateDisplay()
 
     def predictImages(
-        self, imagePathArg, pred_stagesArg, croppedImagepath, numPlateOrg
+        self, imagePathArg, pred_stagesArg, cropped_img_path, numPlateOrg
     ):
         with numPlateOrg.model.as_default():
             with tf.Session(graph=numPlateOrg.model) as sess:
@@ -65,7 +73,7 @@ class DetectVehicleNumberPlate:
                         plateScores_pred,
                     ) = self.plateFinder.findPlatesOnly(boxes, scores, labels)
                     imageLabelled = self.getBoundingBox(
-                        image, plateBoxes_pred, imagePathArg, croppedImagepath
+                        image, plateBoxes_pred, imagePathArg, cropped_img_path
                     )
 
                 else:
@@ -78,7 +86,7 @@ class DetectVehicleNumberPlate:
 
                 return imageLabelled
 
-    def getBoundingBox(self, image, plateBoxes, imagePath, croppedImagepath):
+    def getBoundingBox(self, image, plateBoxes, imagePath, cropped_img_path):
         (H, W) = image.shape[:2]
 
         for plateBox in plateBoxes:
@@ -99,7 +107,7 @@ class DetectVehicleNumberPlate:
 
                 cropped_image = cropped_image.convert("L")
 
-                cropped_image.save(croppedImagepath)
+                cropped_image.save(cropped_img_path)
 
                 return cropped_image
 

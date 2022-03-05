@@ -3,11 +3,10 @@ import re
 
 import requests
 
-url = "https://vision.googleapis.com/v1/images:annotate?key="
+url = "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBe10LKILJKURGIsIs47xUkuIY5LzlG7Ew"
 
 
 def detect_license_plate(encodedImage):
-    # img_base64 = base64.b64encode(imagePath)
     headers = {"content-type": "application/json"}
 
     data = (
