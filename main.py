@@ -19,7 +19,6 @@ CORS(app)
 
 config = read_params()
 
-
 @app.route("/", methods=["GET"])
 @cross_origin()
 def home():

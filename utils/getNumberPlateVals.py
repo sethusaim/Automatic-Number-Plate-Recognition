@@ -1,9 +1,10 @@
 import json
+import os
 import re
 
 import requests
 
-url = "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBe10LKILJKURGIsIs47xUkuIY5LzlG7Ew"
+url = os.environ["GCP_OCR_API"]
 
 
 def detect_license_plate(encodedImage):

@@ -21,7 +21,6 @@ grpcio==1.24.1
 h5py==2.10.0
 idna==2.8
 importlib-metadata==0.23
-imutils==0.5.4
 ipykernel==5.1.3
 ipython==7.8.0
 ipython-genutils==0.2.0
@@ -30,10 +29,6 @@ itsdangerous==1.1.0
 jedi==0.15.1
 Jinja2==2.10.3
 jsonschema==3.1.1
-jupyter==1.0.0
-jupyter-client==5.3.4
-jupyter-console==6.0.0
-jupyter-core==4.6.0
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
 kiwisolver==1.1.0
@@ -47,8 +42,7 @@ nbconvert==5.6.0
 nbformat==4.4.0
 notebook==6.0.1
 numpy==1.17.3
-object-detection @ file:///E:/Workspace/Personal%20Projects/Test%20Projects/Automatic%20Number%20Plate%20Detection/object_detection-0.0.3.tar
-opencv-contrib-python==4.1.1.26
+opencv-python==4.5.2.54
 pandocfilters==1.4.2
 parso==0.5.1
 pickleshare==0.7.5
@@ -60,8 +54,6 @@ Pygments==2.4.2
 pyparsing==2.4.2
 pyrsistent==0.15.4
 python-dateutil==2.8.0
-pywin32==303
-pywinpty==1.1.6
 pyzmq==18.1.0
 qtconsole==4.5.5
 requests==2.22.0
