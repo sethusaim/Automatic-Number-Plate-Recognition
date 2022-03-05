@@ -17,8 +17,6 @@ class DetectVehicleNumberPlate:
 
         self.model_arg = self.config["exported_model_path"]
 
-        self.labels_arg = "datasets/records/classes.pbtxt"
-
         self.labels_arg = self.config["labels_file"]
 
         self.num_classes_arg = self.config["num_classes"]
@@ -54,9 +52,7 @@ class DetectVehicleNumberPlate:
 
         self.plateDisplay = Plate_Display()
 
-    def predict_images(
-        self, image_path_arg, pred_stages_arg, cropped_image_path, num_plate_org
-    ):
+    def predict_images(self, image_path_arg, pred_stages_arg, cropped_image_path, num_plate_org):
         try:
             with num_plate_org.model.as_default():
                 with tf.Session(graph=num_plate_org.model) as sess:
