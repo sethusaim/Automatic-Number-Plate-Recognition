@@ -6,7 +6,6 @@ import requests
 
 url = os.environ["GCP_OCR_API"]
 
-
 def detect_license_plate(encodedImage):
     headers = {"content-type": "application/json"}
 

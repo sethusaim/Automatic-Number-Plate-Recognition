@@ -38,9 +38,9 @@ def getPrediction():
         num_plate = DetectVehicleNumberPlate()
 
         labelled_image = num_plate.predict_images(
-            image_path=config["input_image_path"],
+            image_path_arg=config["input_image_path"],
             pred_stages_arg=config["pred_stages_val"],
-            cropped_img_path=config["results_path"],
+            cropped_image_path=config["results_path"],
             num_plate_org=num_plate,
         )
 

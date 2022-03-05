@@ -1,8 +1,11 @@
+import cv2
 import tensorflow as tf
 from base2designs.plates.plateDisplay import Plate_Display
 from base2designs.plates.plateFinder import Plate_Finder
 from base2designs.plates.predicter import Predicter
-from base2designs.utils import label_map_util
+from base2designs.utils.label_map_util import (convert_label_map_to_categories,
+                                               create_category_index,
+                                               load_labelmap)
 from PIL import Image
 
 from utils.read_params import read_params
@@ -10,12 +13,13 @@ from utils.read_params import read_params
 
 class DetectVehicleNumberPlate:
     def __init__(self):
-
         self.config = read_params()
 
         self.model_arg = self.config["exported_model_path"]
 
-        self.labels_arg = self.config["labels_path"]
+        self.labels_arg = "datasets/records/classes.pbtxt"
+
+        self.labels_arg = self.config["labels_file"]
 
         self.num_classes_arg = self.config["num_classes"]
 
@@ -33,13 +37,13 @@ class DetectVehicleNumberPlate:
 
                 tf.import_graph_def(self.graphDef, name="")
 
-        self.labelMap = label_map_util.load_labelmap(self.labels_arg)
+        self.labelMap = load_labelmap(self.labels_arg)
 
-        self.categories = label_map_util.convert_label_map_to_categories(
+        self.categories = convert_label_map_to_categories(
             self.labelMap, max_num_classes=self.num_classes_arg, use_display_name=True
         )
 
-        self.categoryIdx = label_map_util.create_category_index(self.categories)
+        self.categoryIdx = create_category_index(self.categories)
 
         self.plateFinder = Plate_Finder(
             self.min_confidence_arg,
@@ -51,7 +55,7 @@ class DetectVehicleNumberPlate:
         self.plateDisplay = Plate_Display()
 
     def predict_images(
-        self, image_path, pred_stages_arg, cropped_img_path, num_plate_org
+        self, image_path_arg, pred_stages_arg, cropped_image_path, num_plate_org
     ):
         try:
             with num_plate_org.model.as_default():
@@ -60,22 +64,21 @@ class DetectVehicleNumberPlate:
                         num_plate_org.model, sess, num_plate_org.categoryIdx
                     )
 
-                    image = Image.open(image_path).convert("L")
+                    image = cv2.imread(image_path_arg)
+
+                    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
                     if pred_stages_arg == 2:
                         boxes, scores, labels = predicter.predict_plates(
-                            image=image, preprocess=False
+                            image, preprocess=False
                         )
 
-                        _, plate_boxes_pred, _ = self.plateFinder.find_plates_only(
-                            boxes=boxes, scores=scores, labels=labels
+                        _, plates_boxes_pred, _ = self.plateFinder.find_plates_only(
+                            boxes, scores, labels
                         )
 
                         labelled_image = self.get_bounding_box(
-                            image=image,
-                            plate_boxes=plate_boxes_pred,
-                            image_path=image_path,
-                            cropped_img_path=cropped_img_path,
+                            image, plates_boxes_pred, image_path_arg, cropped_image_path
                         )
 
                     else:
@@ -90,11 +93,11 @@ class DetectVehicleNumberPlate:
         except Exception as e:
             raise e
 
-    def get_bounding_box(self, image, plate_boxes, image_path, cropped_img_path):
+    def get_bounding_box(self, image, plateBoxes, imagePath, cropped_image_path):
         try:
             (H, W) = image.shape[:2]
 
-            for plateBox in plate_boxes:
+            for plateBox in plateBoxes:
                 (startY, startX, endY, endX) = plateBox
 
                 startX = int(startX * W)
@@ -106,18 +109,18 @@ class DetectVehicleNumberPlate:
                 endY = int(endY * H)
 
                 try:
-                    image_obj = Image.open(image_path)
+                    image_obj = Image.open(imagePath)
 
                     cropped_image = image_obj.crop((startX, startY, endX, endY))
 
                     cropped_image = cropped_image.convert("L")
 
-                    cropped_image.save(cropped_img_path)
+                    cropped_image.save(cropped_image_path)
 
                     return cropped_image
 
                 except Exception as e:
-                    raise e
+                    print(e)
 
         except Exception as e:
             raise e

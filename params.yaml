@@ -14,7 +14,7 @@ results_path : results\croppedImage.jpg
 
 exported_model_path : datasets\experiment_ssd\2018_07_25_14-00\exported_model\frozen_inference_graph.pb
 
-labels_path: datasets\records\classes.pbtxt
+labels_file: datasets\records\classes.pbtxt
 
 num_classes : 37
 
