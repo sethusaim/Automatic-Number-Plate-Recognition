@@ -19,6 +19,7 @@ CORS(app)
 
 config = read_params()
 
+
 @app.route("/", methods=["GET"])
 @cross_origin()
 def home():
@@ -36,9 +37,9 @@ def getPrediction():
     try:
         num_plate = DetectVehicleNumberPlate()
 
-        labelled_image = num_plate.predictImages(
+        labelled_image = num_plate.predict_images(
             image_path=config["input_image_path"],
-            pred_stagesArg=config["pred_stages_val"],
+            pred_stages_arg=config["pred_stages_val"],
             cropped_img_path=config["results_path"],
             num_plate_org=num_plate,
         )

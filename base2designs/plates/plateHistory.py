@@ -39,7 +39,7 @@ class PlateHistory:
 
     # plateList: list of plate texts
     # charBoxes: list of char boxes for each plate
-    # plateBoxes: list of plate boxes
+    # plate_boxes: list of plate boxes
     # fullImage: Original image from which the plates were cropped
     # videoPath: path to the image
     # frameNumber: video clip frame number
@@ -51,7 +51,7 @@ class PlateHistory:
         self,
         plateList,
         charBoxes,
-        plateBoxes,
+        plate_boxes,
         fullImage,
         videoPath,
         frameNumber,
@@ -59,7 +59,7 @@ class PlateHistory:
     ):
         # add the new plates to rollingPlateDict
         for (plateText, chBoxes, plateBox, plateScore) in zip(
-            plateList, charBoxes, plateBoxes, plateScores
+            plateList, charBoxes, plate_boxes, plateScores
         ):
             if len(plateText) != 0:
                 if plateText in self.rollingPlateDict:

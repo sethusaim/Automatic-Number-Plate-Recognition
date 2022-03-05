@@ -18,10 +18,10 @@ def crop(image_path, coords, saved_location):
 class Plate_Display:
 
     # create an annotated image with plate boxes, char boxes, and labels
-    def labelImage(self, image, plateBoxes, image_path, cropped_img_path):
+    def labelImage(self, image, plate_boxes, image_path, cropped_img_path):
         (H, W) = image.shape[:2]
 
-        for plateBox in plateBoxes:
+        for plateBox in plate_boxes:
             # Draw the plate box rectangle in red
             # scale the bounding box from the range [0, 1] to [W, H]
             (startY, startX, endY, endX) = plateBox
@@ -34,7 +34,7 @@ class Plate_Display:
             )
 
         # loop over the plate text predictions
-        # for (plateBox, chBoxes, charText) in zip(plateBoxes, charBoxes, charTexts):
+        # for (plateBox, chBoxes, charText) in zip(plate_boxes, charBoxes, charTexts):
         #     # Draw the plate box rectangle in red
         #     # scale the bounding box from the range [0, 1] to [W, H]
         #     (startY, startX, endY, endX) = plateBox
@@ -63,10 +63,10 @@ class Plate_Display:
 
         return croppedimage
 
-    # def labelImage(self, image, plateBoxes):
+    # def labelImage(self, image, plate_boxes):
     #     (H, W) = image.shape[:2]
     #     # loop over the plate text predictions
-    #     for (plateBox) in zip(plateBoxes):
+    #     for (plateBox) in zip(plate_boxes):
     #         # Draw the plate box rectangle in red
     #         # scale the bounding box from the range [0, 1] to [W, H]
     #         # plateBox = plateBox.split(sep=",")

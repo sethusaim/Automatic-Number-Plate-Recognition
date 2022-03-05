@@ -114,7 +114,7 @@ class Predicter:
     #
     #     return boxes, scores, labels
 
-    def predictPlates(self, image, preprocess=True):
+    def predict_plates(self, image, preprocess=True):
 
         if preprocess:
             image, hScale, wScale = self.genSquareImage(image)

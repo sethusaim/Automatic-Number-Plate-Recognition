@@ -1,6 +1,3 @@
-import os
-
-import cv2
 import tensorflow as tf
 from base2designs.plates.plateDisplay import Plate_Display
 from base2designs.plates.plateFinder import Plate_Finder
@@ -8,22 +5,21 @@ from base2designs.plates.predicter import Predicter
 from base2designs.utils import label_map_util
 from PIL import Image
 
+from utils.read_params import read_params
+
 
 class DetectVehicleNumberPlate:
     def __init__(self):
-        self.model_arg = os.path.join(
-            "datasets",
-            "experiment_ssd",
-            "2018_07_25_14-00",
-            "exported_model",
-            "frozen_inference_graph.pb",
-        )
 
-        self.labels_arg = os.path.join("datasets", "records", "classes.pbtxt")
+        self.config = read_params()
 
-        self.num_classes_arg = 37
+        self.model_arg = self.config["exported_model_path"]
 
-        self.min_confidenceArg = 0.5
+        self.labels_arg = self.config["labels_path"]
+
+        self.num_classes_arg = self.config["num_classes"]
+
+        self.min_confidence_arg = self.config["min_confidence"]
 
         self.model = tf.Graph()
 
@@ -46,70 +42,82 @@ class DetectVehicleNumberPlate:
         self.categoryIdx = label_map_util.create_category_index(self.categories)
 
         self.plateFinder = Plate_Finder(
-            self.min_confidenceArg, self.categoryIdx, rejectPlates=False, charIOUMax=0.3
+            self.min_confidence_arg,
+            self.categoryIdx,
+            rejectPlates=False,
+            charIOUMax=0.3,
         )
 
         self.plateDisplay = Plate_Display()
 
-    def predictImages(self, image_path, pred_stagesArg, cropped_img_path, num_plate_org):
+    def predict_images(
+        self, image_path, pred_stages_arg, cropped_img_path, num_plate_org
+    ):
         try:
             with num_plate_org.model.as_default():
                 with tf.Session(graph=num_plate_org.model) as sess:
-                    predicter = Predicter(num_plate_org.model, sess, num_plate_org.categoryIdx)
+                    predicter = Predicter(
+                        num_plate_org.model, sess, num_plate_org.categoryIdx
+                    )
 
-                    image = cv2.imread(image_path)
+                    image = Image.open(image_path).convert("L")
 
-                    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-                    if pred_stagesArg == 2:
-                        boxes, scores, labels = predicter.predictPlates(
-                            image, preprocess=False
+                    if pred_stages_arg == 2:
+                        boxes, scores, labels = predicter.predict_plates(
+                            image=image, preprocess=False
                         )
-                        (
-                            licensePlateFound_pred,
-                            plateBoxes_pred,
-                            plateScores_pred,
-                        ) = self.plateFinder.findPlatesOnly(boxes, scores, labels)
-                        imageLabelled = self.getBoundingBox(
-                            image, plateBoxes_pred, image_path, cropped_img_path
+
+                        _, plate_boxes_pred, _ = self.plateFinder.find_plates_only(
+                            boxes=boxes, scores=scores, labels=labels
+                        )
+
+                        labelled_image = self.get_bounding_box(
+                            image=image,
+                            plate_boxes=plate_boxes_pred,
+                            image_path=image_path,
+                            cropped_img_path=cropped_img_path,
                         )
 
                     else:
                         print(
-                            "[ERROR] --pred_stages {}. The number of prediction stages must be either 1 or 2".format(
-                                pred_stagesArg
-                            )
+                            f"[ERROR] --pred_stages {pred_stages_arg}.The number of prediction stages must be either 1 or 2"
                         )
+
                         quit()
 
-                    return imageLabelled
+                    return labelled_image
 
         except Exception as e:
             raise e
-    def getBoundingBox(self, image, plateBoxes, image_path, cropped_img_path):
-        (H, W) = image.shape[:2]
 
-        for plateBox in plateBoxes:
-            (startY, startX, endY, endX) = plateBox
+    def get_bounding_box(self, image, plate_boxes, image_path, cropped_img_path):
+        try:
+            (H, W) = image.shape[:2]
 
-            startX = int(startX * W)
+            for plateBox in plate_boxes:
+                (startY, startX, endY, endX) = plateBox
 
-            startY = int(startY * H)
+                startX = int(startX * W)
 
-            endX = int(endX * W)
+                startY = int(startY * H)
 
-            endY = int(endY * H)
+                endX = int(endX * W)
 
-            try:
-                image_obj = Image.open(image_path)
+                endY = int(endY * H)
 
-                cropped_image = image_obj.crop((startX, startY, endX, endY))
+                try:
+                    image_obj = Image.open(image_path)
 
-                cropped_image = cropped_image.convert("L")
+                    cropped_image = image_obj.crop((startX, startY, endX, endY))
 
-                cropped_image.save(cropped_img_path)
+                    cropped_image = cropped_image.convert("L")
 
-                return cropped_image
+                    cropped_image.save(cropped_img_path)
 
-            except Exception as e:
-                raise e
+                    return cropped_image
+
+                except Exception as e:
+                    raise e
+
+        except Exception as e:
+            raise e

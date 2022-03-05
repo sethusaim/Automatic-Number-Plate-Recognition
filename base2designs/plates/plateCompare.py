@@ -78,12 +78,12 @@ class PlateCompare:
         plateBoxes_gt,
         charBoxes_gt,
         charTexts_gt,
-        plateBoxes_pred,
+        plate_boxes_pred,
         charBoxes_pred,
         charTexts_pred,
     ):
         # set mask to all true
-        maskPlate_pred = np.ones(len(plateBoxes_pred), dtype=bool)
+        maskPlate_pred = np.ones(len(plate_boxes_pred), dtype=bool)
 
         matchIndices = []
         plateFrameMatchCnt = 0
@@ -92,7 +92,7 @@ class PlateCompare:
         for (i, plateBox_gt) in enumerate(plateBoxes_gt):
             # keep a count of the total number of gt chars
             charCntTotal_gt += len(charBoxes_gt[i])
-            for (j, plateBox_pred) in enumerate(plateBoxes_pred):
+            for (j, plateBox_pred) in enumerate(plate_boxes_pred):
                 iou = self.intersectionOverUnion(plateBox_gt, plateBox_pred)
                 if iou >= 0.5 and maskPlate_pred[j] == True:
                     # maintain a list of indices for matching gt and pred plate boxes
@@ -108,7 +108,7 @@ class PlateCompare:
         charMatchCntTotal = 0
 
         # loop over all the matching plate boxes found in the previous code block
-        if len(plateBoxes_pred) != len(charBoxes_pred):
+        if len(plate_boxes_pred) != len(charBoxes_pred):
             print("mismatch")
         for (i, j) in matchIndices:
             # if j >= len(charBoxes_pred):
@@ -145,7 +145,7 @@ class PlateCompare:
             charCntTotal_pred += len(chBoxes_pred)
 
         plateCntTotal_gt = len(plateBoxes_gt)
-        plateCntTotal_pred = len(plateBoxes_pred)
+        plateCntTotal_pred = len(plate_boxes_pred)
 
         # maintain the cumulative scores
         self.cum_plateWithCharMatchCnt += plateWithCharMatchCnt

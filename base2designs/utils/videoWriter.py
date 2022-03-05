@@ -18,9 +18,9 @@ class VideoWriter:
         endY = int(endY * self.H)
         return startX, startY, endX, endY
 
-    def writeFrame(self, frame, plateBoxes, charTexts, charBoxes, charScores):
+    def writeFrame(self, frame, plate_boxes, charTexts, charBoxes, charScores):
         for (plateBox, chText, chBoxes, chScores) in zip(
-            plateBoxes, charTexts, charBoxes, charScores
+            plate_boxes, charTexts, charBoxes, charScores
         ):
             # display the plate box and plate text
             if len(plateBox) != 0:

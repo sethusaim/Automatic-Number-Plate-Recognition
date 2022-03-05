@@ -79,7 +79,7 @@ class Plate_Finder:
 
     # Scrub the chars within the plates. Once cleaned, generate
     # lists of char text, char boxes, and and char scores for every plate
-    def processPlates(self, plates, plateBoxes, plateScores):
+    def processPlates(self, plates, plate_boxes, plateScores):
         # Working from left to right, discard any charBox that has an iou > 'charIOUMax'
         # with the box immediately to the left.
         # Loop over the chars, adding chars to charsNoOverLap, if there is no overlap
@@ -107,7 +107,7 @@ class Plate_Finder:
 
         # Extract the character text, boxes and scores and append to lists
         # Final result is 3 lists containing char text, char boxes and char scores
-        # These lists should be the same size as the plateBoxes list
+        # These lists should be the same size as the plate_boxes list
         charTexts = []
         charBoxes = []
         charScores = []
@@ -132,7 +132,7 @@ class Plate_Finder:
         plateAverageScores = []
         mask = np.ones(len(plateScores), dtype=bool)
         for (i, (plateBox, plateScore, chScores)) in enumerate(
-            zip(plateBoxes, plateScores, charScores)
+            zip(plate_boxes, plateScores, charScores)
         ):
             # Calc the average score for plate plus characters inside the plate, and save to plateAverageScores
             averageScore = (plateScore + sum(chScores)) / (len(chScores) + 1)
@@ -150,32 +150,32 @@ class Plate_Finder:
         if self.rejectPlates == True:
             # update the lists to remove discarded plates
             plateAverageScores = list(np.array(plateAverageScores)[mask, ...])
-            plateBoxes = list(np.array(plateBoxes)[mask, ...])
+            plate_boxes = list(np.array(plate_boxes)[mask, ...])
             charScores = list(np.array(charScores)[mask, ...])
             charTexts = list(np.array(charTexts, object)[mask, ...])
             charBoxes = list(np.array(charBoxes)[mask, ...])
 
-        if len(plateBoxes) != len(plateAverageScores) or len(plateBoxes) != len(
+        if len(plate_boxes) != len(plateAverageScores) or len(plate_boxes) != len(
             charTexts
         ):
             print(
                 "[ERROR]: len(platesBoxes):{} != len(plateAverageScores):{} or len(platesBoxes):{} != len(charTexts):{}".format(
-                    len(plateBoxes),
+                    len(plate_boxes),
                     len(plateAverageScores),
-                    len(plateBoxes),
+                    len(plate_boxes),
                     len(charTexts),
                 )
             )
-        if len(plateBoxes) != len(charBoxes):
+        if len(plate_boxes) != len(charBoxes):
             print(
                 "[ERROR]: len(platesBoxes):{} != len(charBoxes):{}".format(
-                    len(plateBoxes), len(charBoxes)
+                    len(plate_boxes), len(charBoxes)
                 )
             )
         if licensePlateFound == True and len(plateAverageScores) == 0:
             print("[INFO] license plate found but now rejected")
 
-        return plateBoxes, charTexts, charBoxes, charScores, plateAverageScores
+        return plate_boxes, charTexts, charBoxes, charScores, plateAverageScores
 
     # Find plate boxes and the text associated with each plate
     def findPlates(self, boxes, scores, labels):
@@ -184,7 +184,7 @@ class Plate_Finder:
         mask = np.ones(len(scores), dtype=bool)
 
         # Start by discarding all boxes below min score, and moving plate boxes to separate list
-        plateBoxes = []
+        plate_boxes = []
         plateScores = []
         for (i, (box, score, label)) in enumerate(zip(boxes, scores, labels)):
             if score < self.minConfidence:
@@ -192,10 +192,10 @@ class Plate_Finder:
                 continue
             label = self.categoryIdx[label]
             label = "{}".format(label["name"])
-            # if label is plate, then append box to plateBoxes list and discard from original lists
+            # if label is plate, then append box to plate_boxes list and discard from original lists
             if label == "plate":
                 mask[i] = False
-                plateBoxes.append(box)
+                plate_boxes.append(box)
                 plateScores.append(score)
 
         # update the lists to remove discarded boxes
@@ -206,7 +206,7 @@ class Plate_Finder:
         # For each plate box, discard char boxes that are less than 0.5 ioa with plateBox.
         # re-order the remaining boxes by startX
         plates = []
-        for plateBox in plateBoxes:
+        for plateBox in plate_boxes:
             chars = []
             # loop over the lists: boxes, scores and labels
             # and discard chars that have low ioa with plateBox
@@ -227,18 +227,18 @@ class Plate_Finder:
                 plates.append(None)
 
         (
-            plateBoxes,
+            plate_boxes,
             charTexts,
             charBoxes,
             charScores,
             plateAverageScores,
-        ) = self.processPlates(plates, plateBoxes, plateScores)
-        if len(plateBoxes) != 0:
+        ) = self.processPlates(plates, plate_boxes, plateScores)
+        if len(plate_boxes) != 0:
             licensePlateFound = True
 
         return (
             licensePlateFound,
-            plateBoxes,
+            plate_boxes,
             charTexts,
             charBoxes,
             charScores,
@@ -246,12 +246,12 @@ class Plate_Finder:
         )
 
     # Find only plates, and ignore chars
-    # return the plateBoxes and plateScores
-    def findPlatesOnly(self, boxes, scores, labels):
+    # return the plate_boxes and plateScores
+    def find_plates_only(self, boxes, scores, labels):
         licensePlateFound = False
 
         # Discard all boxes below min score, and move plate boxes to separate list
-        plateBoxes = []
+        plate_boxes = []
         plateScores = []
         # loop over all the boxes and associated scores and labels
         for (i, (box, score, label)) in enumerate(zip(boxes, scores, labels)):
@@ -262,10 +262,10 @@ class Plate_Finder:
             # if label is plate, then append data to new lists
             if label == "plate":
                 licensePlateFound = True
-                plateBoxes.append(box)
+                plate_boxes.append(box)
                 plateScores.append(score)
 
-        return licensePlateFound, plateBoxes, plateScores
+        return licensePlateFound, plate_boxes, plateScores
 
     # Find ground truth plate boxes and the text associated with each plate
     def findGroundTruthPlates(self, boxes, labels):
@@ -276,12 +276,12 @@ class Plate_Finder:
         mask = np.ones(len(labels), dtype=bool)
 
         # move plate boxes to separate list
-        plateBoxes = []
+        plate_boxes = []
         for (i, (box, label)) in enumerate(zip(boxes, labels)):
-            # if label is plate, then append box to plateBoxes list and discard from original lists
+            # if label is plate, then append box to plate_boxes list and discard from original lists
             if label == "plate":
                 mask[i] = False
-                plateBoxes.append(box)
+                plate_boxes.append(box)
 
         # update the lists to remove plate boxes
         boxes = boxes[mask, ...]
@@ -290,7 +290,7 @@ class Plate_Finder:
         # For each plate box, discard char boxes that are less than 'charPlateIOAMin' ioa with plateBox.
         # re-order the remaining boxes by startX
         plates = []
-        for plateBox in plateBoxes:
+        for plateBox in plate_boxes:
             chars = []
             for (charBox, label) in zip(boxes, labels):
                 ioa = self.intersectionOverArea(charBox, plateBox)
@@ -318,14 +318,14 @@ class Plate_Finder:
                 charTexts.append([])
                 charBoxes.append([])
 
-        if len(plateBoxes) != len(plates) or len(plateBoxes) != len(charTexts):
+        if len(plate_boxes) != len(plates) or len(plate_boxes) != len(charTexts):
             print(
                 "[ERROR]: len(platesBoxes):{} !plates= len(plates):{} or len(platesBoxes):{} != len(charText):{}".format(
-                    len(plateBoxes), len(plates), len(plateBoxes), len(charTexts)
+                    len(plate_boxes), len(plates), len(plate_boxes), len(charTexts)
                 )
             )
 
-        return licensePlateFound, plateBoxes, charTexts, charBoxes
+        return licensePlateFound, plate_boxes, charTexts, charBoxes
 
     def findCharsOnly(
         self, boxes, scores, labels, plateBox, fullImageHeight, fullImageWidth
