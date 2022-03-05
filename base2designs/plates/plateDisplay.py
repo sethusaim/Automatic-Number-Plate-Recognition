@@ -15,7 +15,7 @@ def crop(image_path, coords, saved_location):
     # cropped_image.show()
 
 
-class PlateDisplay:
+class Plate_Display:
 
     # create an annotated image with plate boxes, char boxes, and labels
     def labelImage(self, image, plateBoxes, image_path, cropped_img_path):

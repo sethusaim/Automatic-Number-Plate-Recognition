@@ -40,7 +40,7 @@ def getPrediction():
             image_path=config["input_image_path"],
             pred_stagesArg=config["pred_stages_val"],
             cropped_img_path=config["results_path"],
-            numPlateOrg=num_plate,
+            num_plate_org=num_plate,
         )
 
         if labelled_image is not None:

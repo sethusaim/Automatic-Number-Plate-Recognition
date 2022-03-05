@@ -4,11 +4,11 @@ from base2designs.utils import label_map_util
 import tensorflow as tf
 
 
-num_classesArg = 37
-modelArg = (
+num_classes_arg = 37
+model_arg = (
     "datasets/experiment_ssd/2018_07_25_14-00/exported_model/frozen_inference_graph.pb"
 )
-labelsArg = "datasets/records/classes.pbtxt"
+labels_arg = "datasets/records/classes.pbtxt"
 # initialize the model
 model = tf.Graph()
 # create a context manager that makes this model the default one for
@@ -18,13 +18,13 @@ with model.as_default():
     graphDef = tf.GraphDef()
 
     # load the graph from disk
-    with tf.gfile.GFile(modelArg, "rb") as f:
+    with tf.gfile.GFile(model_arg, "rb") as f:
         serializedGraph = f.read()
         graphDef.ParseFromString(serializedGraph)
         tf.import_graph_def(graphDef, name="")
-labelMap = label_map_util.load_labelmap(labelsArg)
+labelMap = label_map_util.load_labelmap(labels_arg)
 categories = label_map_util.convert_label_map_to_categories(
-    labelMap, max_num_classes=num_classesArg, use_display_name=True
+    labelMap, max_num_classes=num_classes_arg, use_display_name=True
 )
 # categoryIdx = label_map_util.create_category_index(categories)
 # imageTensor = model.get_tensor_by_name("image_tensor:0")

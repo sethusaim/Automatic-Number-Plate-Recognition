@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class PlateFinder:
+class Plate_Finder:
     def __init__(
         self,
         minConfidence,
