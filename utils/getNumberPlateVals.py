@@ -29,6 +29,7 @@ def detect_license_plate(encodedImage):
       ]
     }"""
     )
+
     r = requests.post(url, headers=headers, data=data)
 
     result = json.loads(r.text)

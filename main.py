@@ -19,6 +19,8 @@ CORS(app)
 
 config = read_params()
 
+img_utils = Image_Utils()
+
 
 @app.route("/", methods=["GET"])
 @cross_origin()
@@ -28,13 +30,11 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def getPrediction():
-    inpImage = request.json["image"]
-
-    img_utils = Image_Utils()
-
-    img_utils.decode_image(inpImage, config["input_image_path"])
-
     try:
+        inpImage = request.json["image"]
+
+        img_utils.decode_image(inpImage, config["input_image_path"])
+
         num_plate = DetectVehicleNumberPlate()
 
         labelled_image = num_plate.predict_images(
@@ -83,7 +83,6 @@ def getPrediction():
     jsonStr = json.dumps(response_dict, ensure_ascii=False).encode("utf8")
 
     return jsonify(jsonStr)
-
 
 if __name__ == "__main__":
     host = "0.0.0.0"

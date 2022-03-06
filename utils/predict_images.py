@@ -3,11 +3,8 @@ import tensorflow as tf
 from base2designs.plates.plateDisplay import Plate_Display
 from base2designs.plates.plateFinder import Plate_Finder
 from base2designs.plates.predicter import Predicter
-from base2designs.utils.label_map_util import (convert_label_map_to_categories,
-                                               create_category_index,
-                                               load_labelmap)
+from base2designs.utils import label_map_util
 from PIL import Image
-
 from utils.read_params import read_params
 
 
@@ -35,13 +32,15 @@ class DetectVehicleNumberPlate:
 
                 tf.import_graph_def(self.graphDef, name="")
 
-        self.labelMap = load_labelmap(self.labels_arg)
+        self.labelMap = label_map_util.load_labelmap(path=self.labels_arg)
 
-        self.categories = convert_label_map_to_categories(
-            self.labelMap, max_num_classes=self.num_classes_arg, use_display_name=True
+        self.categories = label_map_util.convert_label_map_to_categories(
+            label_map=self.labelMap,
+            max_num_classes=self.num_classes_arg,
+            use_display_name=True,
         )
 
-        self.categoryIdx = create_category_index(self.categories)
+        self.categoryIdx = label_map_util.create_category_index(self.categories)
 
         self.plateFinder = Plate_Finder(
             self.min_confidence_arg,
@@ -52,7 +51,9 @@ class DetectVehicleNumberPlate:
 
         self.plateDisplay = Plate_Display()
 
-    def predict_images(self, image_path_arg, pred_stages_arg, cropped_image_path, num_plate_org):
+    def predict_images(
+        self, image_path_arg, pred_stages_arg, cropped_image_path, num_plate_org
+    ):
         try:
             with num_plate_org.model.as_default():
                 with tf.Session(graph=num_plate_org.model) as sess:
@@ -89,7 +90,7 @@ class DetectVehicleNumberPlate:
         except Exception as e:
             raise e
 
-    def get_bounding_box(self, image, plateBoxes, imagePath, cropped_image_path):
+    def get_bounding_box(self, image, plateBoxes, cropped_image_path, imagePath):
         try:
             (H, W) = image.shape[:2]
 
